@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tango Men35
 
-## Getting Started
+Arjantin tango pantolonları için e-ticaret sitesi. Next.js 16 (App Router) + Cloudflare Workers (OpenNext) + D1.
 
-First, run the development server:
+Ödeme şu an online alınmıyor: ödeme sayfası bir sipariş formudur, siparişler D1'e yazılır ve `/admin` panelinde listelenir.
+
+## Geliştirme
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run db:migrate:local     # yerel D1 tablolarını oluşturur
+npm run dev                  # http://localhost:3000
+npm run preview              # Workers runtime'ında (workerd) yerel önizleme
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Yerel admin şifresi ve imza anahtarı `.dev.vars` dosyasında (`ADMIN_PASSWORD`, `ADMIN_SECRET`). `.env*` dosyalarına gizli değer koymayın: OpenNext bunları Worker paketine gömer.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cloudflare'e yayınlama
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Canlı adres: https://tangomen35.com (www → ana domaine 301)
 
-## Learn More
+Cloudflare bilgileri `.cloudflare.env` dosyasında (git dışı): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run db:migrate:remote    # yeni migration eklendiğinde
+npm run deploy
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Canlı admin şifresi Cloudflare secret'ı olarak tutulur (`wrangler secret put ADMIN_PASSWORD`). Alan adı: Workers & Pages → tangomen35 → Settings → Domains & Routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Yapı
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/lib/catalog.ts` — ürünler, koleksiyonlar, fiyatlar, marka bilgileri
+- `src/lib/orders.ts` — D1 sipariş / bülten sorguları
+- `migrations/` — D1 şeması
+- `worker.ts` — Worker giriş noktası (www → tangomen35.com yönlendirmesi, sonra OpenNext). Next `proxy.ts` kullanmayın: OpenNext middleware'i çerezli isteklerde çöküyor.
+- `src/app/(shop)` — mağaza (ana sayfa, koleksiyon, ürün, sepet, ödeme formu, sipariş takibi)
+- `src/app/admin` — yönetim paneli (siparişler, durum, iç not, WhatsApp/telefon bağlantıları, bülten aboneleri)
+- `public/media` — @tangomen35 Instagram gönderilerinden hazırlanmış görseller ve sessiz video döngüleri

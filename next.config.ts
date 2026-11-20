@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  images: { unoptimized: true },
   turbopack: {
     rules: {
       "*.css": {
@@ -13,5 +12,7 @@ const nextConfig: NextConfig = {
     },
   },
 };
+
+initOpenNextCloudflareForDev();
 
 export default nextConfig;
