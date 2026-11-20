@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ExternalLink, LogOut, Mail, Package } from "lucide-react";
-import { isAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { Logo } from "@/components/logo";
 import { logout } from "../actions";
 
 export const metadata: Metadata = { title: "Yönetim", robots: { index: false } };
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
-  if (!(await isAdmin())) redirect("/admin/login");
+  await requireAdmin();
   return (
     <div className="min-h-screen bg-[#f6f5f2]">
       <header className="bg-ink text-white">

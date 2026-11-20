@@ -1,7 +1,9 @@
+import { requireAdmin } from "@/lib/auth";
 import { listSubscribers } from "@/lib/orders";
 import { formatDate } from "../status-badge";
 
 export default async function SubscribersPage() {
+  await requireAdmin();
   const subs = await listSubscribers();
   return (
     <>

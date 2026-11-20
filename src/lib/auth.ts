@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { readSecret } from "./secrets";
 
 export const ADMIN_COOKIE = "tm_admin";
@@ -39,4 +40,8 @@ export async function isAdmin() {
   const a = Buffer.from(sig);
   const b = Buffer.from(await sign(exp));
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+export async function requireAdmin() {
+  if (!(await isAdmin())) redirect("/admin/login");
 }

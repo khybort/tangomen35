@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { formatPrice } from "@/lib/catalog";
@@ -5,6 +6,7 @@ import { listOrders, orderStats, ORDER_STATUSES, PAYMENT_METHODS } from "@/lib/o
 import { formatDate, StatusBadge } from "./status-badge";
 
 export default async function OrdersPage({ searchParams }: PageProps<"/admin">) {
+  await requireAdmin();
   const sp = await searchParams;
   const status = typeof sp.status === "string" ? sp.status : "";
   const q = typeof sp.q === "string" ? sp.q.trim() : "";

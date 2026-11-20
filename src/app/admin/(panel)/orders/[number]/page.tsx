@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,6 +10,7 @@ import { saveOrder } from "../../../actions";
 import { formatDate, StatusBadge } from "../../status-badge";
 
 export default async function OrderDetail({ params }: PageProps<"/admin/orders/[number]">) {
+  await requireAdmin();
   const order = await getOrderByNumber((await params).number);
   if (!order) notFound();
 
